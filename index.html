@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Apple School - Result Portal</title>
+<style>
+  :root{
+    --pink:#e91e8c;
+    --blue:#1a3fa0;
+    --blue-row:#1e7be0;
+    --red:#f15a5a;
+    --purple:#9b2fc4;
+    --border:#dfe3ea;
+    --bg:#eef1f6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Segoe UI', Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:30px 14px;
+  }
+  .card{
+    background:#fff;
+    width:100%;
+    max-width:680px;
+    border-radius:10px;
+    box-shadow:0 6px 24px rgba(20,30,60,.10);
+    padding:30px 36px 26px;
+  }
+  .school{
+    text-align:center;
+    color:var(--pink);
+    font-weight:800;
+    font-size:26px;
+    margin:0;
+    letter-spacing:.3px;
+  }
+  .collab{
+    text-align:center;
+    color:var(--blue);
+    font-weight:600;
+    font-size:13px;
+    margin:6px 0 2px;
+  }
+  .academy{
+    text-align:center;
+    color:var(--pink);
+    font-weight:800;
+    font-size:20px;
+    margin:2px 0;
+  }
+  .town{
+    text-align:center;
+    color:var(--blue);
+    font-weight:600;
+    font-size:13px;
+    margin:2px 0 14px;
+  }
+  hr.top{border:none;border-top:1px solid var(--border);margin:14px 0;}
+  .test-title{
+    text-align:center;
+    color:var(--blue);
+    font-weight:700;
+    font-size:15px;
+    margin:0 0 20px;
+  }
+  .search-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .search-row input{
+    flex:1;
+    padding:11px 14px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-size:15px;
+    outline:none;
+  }
+  .search-row input:focus{border-color:var(--pink);}
+  .btn{
+    border:none;
+    border-radius:6px;
+    padding:0 18px;
+    font-size:14px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+  }
+  .btn-search{background:#2e9b3f;}
+  .btn-search:hover{background:#258433;}
+  .btn-print{background:#2e9b3f;}
+  .btn-print:hover{background:#258433;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:14px;
+  }
+  td,th{
+    border:1px solid var(--border);
+    padding:11px 14px;
+    font-size:14.5px;
+  }
+  .info td:first-child{
+    background:var(--blue-row);
+    color:#fff;
+    font-weight:700;
+    width:40%;
+  }
+  .som-head{
+    text-align:center;
+    background:#f3f5f8;
+    color:var(--blue);
+    font-weight:700;
+    padding:10px;
+    border:1px solid var(--border);
+  }
+  .marks-head th{
+    background:#1e88e5;
+    color:#fff;
+    font-weight:700;
+  }
+  .marks-head th:last-child{width:90px;text-align:left;}
+  tr.total td{background:var(--red);color:#fff;font-weight:700;}
+  tr.result td{background:var(--purple);color:#fff;font-weight:700;}
+  .support{
+    text-align:center;
+    font-size:13px;
+    margin-top:18px;
+  }
+  .support a{color:#2752d6;text-decoration:none;}
+  .msg{
+    text-align:center;
+    padding:30px 10px;
+    color:#777;
+    font-size:14.5px;
+  }
+  .hidden{display:none;}
+  @media print{
+    body{background:#fff;padding:0;}
+    .card{box-shadow:none;max-width:100%;}
+    .search-row{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <p class="school">THE APPLE SCHOOL</p>
+  <p class="collab">in collaboration with</p>
+  <p class="academy">ABHYAAS IIT-JEE/NEET FOUNDATION ACADEMY</p>
+  <p class="town">Thattekere, Channapatna Town</p>
+  <hr class="top">
+  <p class="test-title">GRADE 10 BOARD &amp; COMPETITIVE WEEKLY TEST RESULT: 02-06-2026</p>
+
+  <div class="search-row">
+    <input id="searchBox" type="text" placeholder="Enter Roll No. / Password" autocomplete="off">
+    <button class="btn btn-search" onclick="doSearch()">Search</button>
+    <button class="btn btn-print" onclick="window.print()">Print</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+/* ===================== STUDENT DATA =====================
+   Loaded from: 10th_TEST1_MATHS.xlsx
+   Each record: pwd (login), name, reg (roll no), cls, sec,
+   mbt = Maths Board Test (max 30), mct = Maths Competitive Test (max 20),
+   sbt = Science Board Test (max 30), sct = Science Competitive Test (max 20)
+   Values "A" = Absent, "-" = not yet entered/conducted.
+   To update marks for next test: just edit the numbers below
+   (or regenerate this block from a fresh Excel export) and re-save the file.
+*/
+const STUDENTS = [{"pwd":"AA2610C01","name":"ABISHEK GOWDA S","reg":"AA2610C01","cls":"10","sec":"CORAL","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610C02","name":"ADITHYA B","reg":"AA2610C02","cls":"10","sec":"CORAL","mbt":"4","mct":"7","sbt":"-","sct":"-"},{"pwd":"AA2610C03","name":"AMRUTHA KRUPA S","reg":"AA2610C03","cls":"10","sec":"CORAL","mbt":"2","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C04","name":"AYUSHI SANTHOSH JADHAV","reg":"AA2610C04","cls":"10","sec":"CORAL","mbt":"11","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C05","name":"DAKSHAYA A C","reg":"AA2610C05","cls":"10","sec":"CORAL","mbt":"15","mct":"15","sbt":"-","sct":"-"},{"pwd":"AA2610C06","name":"DHANUSHREE B G","reg":"AA2610C06","cls":"10","sec":"CORAL","mbt":"10","mct":"10","sbt":"-","sct":"-"},{"pwd":"AA2610C07","name":"DHAVAN N","reg":"AA2610C07","cls":"10","sec":"CORAL","mbt":"7","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610C08","name":"GAUSIYA KHANUM","reg":"AA2610C08","cls":"10","sec":"CORAL","mbt":"1","mct":"7","sbt":"-","sct":"-"},{"pwd":"AA2610C09","name":"HAMSA K U","reg":"AA2610C09","cls":"10","sec":"CORAL","mbt":"24","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C10","name":"HEMANTH GURUVAPPA L","reg":"AA2610C10","cls":"10","sec":"CORAL","mbt":"2","mct":"9","sbt":"-","sct":"-"},{"pwd":"AA2610C11","name":"MOHAMMED AMEEN AHMED","reg":"AA2610C11","cls":"10","sec":"CORAL","mbt":"15","mct":"14","sbt":"-","sct":"-"},{"pwd":"AA2610C12","name":"MOHAMMED HADI KHAN","reg":"AA2610C12","cls":"10","sec":"CORAL","mbt":"12","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C13","name":"MOHITHA B S","reg":"AA2610C13","cls":"10","sec":"CORAL","mbt":"4","mct":"10","sbt":"-","sct":"-"},{"pwd":"AA2610C14","name":"NIHA SULTANA","reg":"AA2610C14","cls":"10","sec":"CORAL","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610C15","name":"NIKHIL C B","reg":"AA2610C15","cls":"10","sec":"CORAL","mbt":"2","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C16","name":"RAKSHA","reg":"AA2610C16","cls":"10","sec":"CORAL","mbt":"6","mct":"6","sbt":"-","sct":"-"},{"pwd":"AA2610C17","name":"SAIFA ASIYA","reg":"AA2610C17","cls":"10","sec":"CORAL","mbt":"17","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610C18","name":"SIRI .S","reg":"AA2610C18","cls":"10","sec":"CORAL","mbt":"3","mct":"7","sbt":"-","sct":"-"},{"pwd":"AA2610C19","name":"SYED AIMAN","reg":"AA2610C19","cls":"10","sec":"CORAL","mbt":"0","mct":"14","sbt":"-","sct":"-"},{"pwd":"AA2610C20","name":"SYED ATHIF AHMED","reg":"AA2610C20","cls":"10","sec":"CORAL","mbt":"1","mct":"9","sbt":"-","sct":"-"},{"pwd":"AA2610C21","name":"SYED KHUDA BAKSH KHURRAM","reg":"AA2610C21","cls":"10","sec":"CORAL","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610C22","name":"SYED NUMAN","reg":"AA2610C22","cls":"10","sec":"CORAL","mbt":"2","mct":"6","sbt":"-","sct":"-"},{"pwd":"AA2610C23","name":"SYED RASOOL TAHA","reg":"AA2610C23","cls":"10","sec":"CORAL","mbt":"18","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610C24","name":"SYEDA KHATEEN","reg":"AA2610C24","cls":"10","sec":"CORAL","mbt":"6","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610C25","name":"SYEDA SAMIYA","reg":"AA2610C25","cls":"10","sec":"CORAL","mbt":"9","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610C26","name":"TEJAS BHALLE M P","reg":"AA2610C26","cls":"10","sec":"CORAL","mbt":"21","mct":"16","sbt":"-","sct":"-"},{"pwd":"AA2610C27","name":"YOGARAJA M","reg":"AA2610C27","cls":"11","sec":"CORAL","mbt":"12","mct":"14","sbt":"-","sct":"-"},{"pwd":"AA2610D01","name":"AAYAAN TAQI","reg":"AA2610D01","cls":"10","sec":"DIAMOND","mbt":"15","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D02","name":"AAZEEN AARA","reg":"AA2610D02","cls":"10","sec":"DIAMOND","mbt":"2","mct":"11","sbt":"-","sct":"-"},{"pwd":"AA2610D03","name":"BHARATH SHETTY R.S","reg":"AA2610D03","cls":"10","sec":"DIAMOND","mbt":"3","mct":"10","sbt":"-","sct":"-"},{"pwd":"AA2610D04","name":"CHANDANA C S","reg":"AA2610D04","cls":"10","sec":"DIAMOND","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610D05","name":"DEEKSHITH M","reg":"AA2610D05","cls":"10","sec":"DIAMOND","mbt":"0","mct":"14","sbt":"-","sct":"-"},{"pwd":"AA2610D06","name":"DEEKSITH R GOWDA","reg":"AA2610D06","cls":"10","sec":"DIAMOND","mbt":"13","mct":"7","sbt":"-","sct":"-"},{"pwd":"AA2610D07","name":"HAMDAN SHARIFF","reg":"AA2610D07","cls":"10","sec":"DIAMOND","mbt":"6","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D08","name":"HARINI N","reg":"AA2610D08","cls":"10","sec":"DIAMOND","mbt":"3","mct":"7","sbt":"-","sct":"-"},{"pwd":"AA2610D09","name":"HEMANTH V R","reg":"AA2610D09","cls":"10","sec":"DIAMOND","mbt":"7","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D10","name":"KEERTHANA","reg":"AA2610D10","cls":"10","sec":"DIAMOND","mbt":"19","mct":"11","sbt":"-","sct":"-"},{"pwd":"AA2610D11","name":"LIKITH GOWDA S","reg":"AA2610D11","cls":"10","sec":"DIAMOND","mbt":"1","mct":"9","sbt":"-","sct":"-"},{"pwd":"AA2610D12","name":"MOHAMMED ATA UR REHMAN","reg":"AA2610D12","cls":"10","sec":"DIAMOND","mbt":"4","mct":"8","sbt":"-","sct":"-"},{"pwd":"AA2610D13","name":"MOHAMMED MOINUDDIN","reg":"AA2610D13","cls":"10","sec":"DIAMOND","mbt":"5","mct":"14","sbt":"-","sct":"-"},{"pwd":"AA2610D14","name":"MOHITH B P","reg":"AA2610D14","cls":"10","sec":"DIAMOND","mbt":"9","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610D15","name":"MYSHA ALI","reg":"AA2610D15","cls":"10","sec":"DIAMOND","mbt":"1","mct":"11","sbt":"-","sct":"-"},{"pwd":"AA2610D16","name":"POOJA S","reg":"AA2610D16","cls":"10","sec":"DIAMOND","mbt":"20","mct":"11","sbt":"-","sct":"-"},{"pwd":"AA2610D17","name":"ROHAN S","reg":"AA2610D17","cls":"10","sec":"DIAMOND","mbt":"4","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D18","name":"SHEZA FATHIMA","reg":"AA2610D18","cls":"10","sec":"DIAMOND","mbt":"15","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D19","name":"SYED ALISHAN MADNI","reg":"AA2610D19","cls":"10","sec":"DIAMOND","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610D20","name":"SYED MUFASSIR","reg":"AA2610D20","cls":"10","sec":"DIAMOND","mbt":"10","mct":"16","sbt":"-","sct":"-"},{"pwd":"AA2610D21","name":"SYED SADAKATH MEHDI BUKHARI","reg":"AA2610D21","cls":"10","sec":"DIAMOND","mbt":"11","mct":"12","sbt":"-","sct":"-"},{"pwd":"AA2610D22","name":"SYEDA YUSRA TEHREEM","reg":"AA2610D22","cls":"10","sec":"DIAMOND","mbt":"A","mct":"A","sbt":"-","sct":"-"},{"pwd":"AA2610D23","name":"TEJAS M","reg":"AA2610D23","cls":"10","sec":"DIAMOND","mbt":"3","mct":"10","sbt":"-","sct":"-"},{"pwd":"AA2610D24","name":"VIJAY KUMAR","reg":"AA2610D24","cls":"10","sec":"DIAMOND","mbt":"0","mct":"13","sbt":"-","sct":"-"},{"pwd":"AA2610D25","name":"YUKTHI PRIYA V S","reg":"AA2610D25","cls":"10","sec":"DIAMOND","mbt":"14","mct":"15","sbt":"-","sct":"-"},{"pwd":"AA2610D26","name":"ZAIFI AFNAN","reg":"AA2610D26","cls":"10","sec":"DIAMOND","mbt":"14","mct":"10","sbt":"-","sct":"-"}];
+
+/* Pass mark: 35% of the total max marks of subjects that have been entered.
+   Change PASS_PERCENT below if your school uses a different cut-off. */
+const PASS_PERCENT = 35;
+
+const SUBJECTS = [
+  {key:'mbt', label:'Mathematics (Board Test) Max.Marks:30', max:30},
+  {key:'mct', label:'Mathematics (Competitive Test) Max.Marks:20', max:20},
+  {key:'sbt', label:'Science (Board Test) Max.Marks:30', max:30},
+  {key:'sct', label:'Science (Competitive Test) Max.Marks:20', max:20}
+];
+
+function isNumeric(v){ return v !== '-' && v !== 'A' && v !== '' && v !== undefined && !isNaN(Number(v)); }
+
+function render(student){
+  const rows = SUBJECTS.map(s=>{
+    const v = student[s.key];
+    let display = v;
+    if(v === 'A') display = 'Absent';
+    return `<tr><td>${s.label}</td><td>${display}</td></tr>`;
+  }).join('');
+
+  const allEntered = SUBJECTS.every(s=>isNumeric(student[s.key]));
+  let total = '-', result = '-', resultColor = '';
+  if(allEntered){
+    const sum = SUBJECTS.reduce((acc,s)=>acc+Number(student[s.key]),0);
+    const maxSum = SUBJECTS.reduce((acc,s)=>acc+s.max,0);
+    total = sum;
+    const pass = sum >= (PASS_PERCENT/100)*maxSum;
+    result = pass ? 'PASS' : 'FAIL';
+  }
+
+  document.getElementById('result').innerHTML = `
+    <table class="info">
+      <tr><td>Name</td><td>${student.name}</td></tr>
+      <tr><td>Roll No.</td><td>${student.reg}</td></tr>
+      <tr><td>Class</td><td>${student.cls}</td></tr>
+      <tr><td>Section</td><td>${student.sec}</td></tr>
+    </table>
+    <table>
+      <tr><th class="som-head" colspan="2">STATEMENT OF MARKS</th></tr>
+      <tr class="marks-head"><th>Subject</th><th>Marks</th></tr>
+      ${rows}
+      <tr class="total"><td>Total</td><td>${total}</td></tr>
+      <tr class="result"><td>Result</td><td>${result}</td></tr>
+    </table>
+    <p class="support">For support contact <a href="tel:9632318383">9632318383</a>, <a href="tel:9144844032">9144844032</a>, <a href="tel:8904329123">8904329123</a></p>
+  `;
+}
+
+function doSearch(){
+  const q = document.getElementById('searchBox').value.trim().toUpperCase();
+  if(!q){
+    document.getElementById('result').innerHTML = '<p class="msg">Enter a Roll No. / Password to view the result.</p>';
+    return;
+  }
+  const student = STUDENTS.find(s => s.reg.toUpperCase() === q || s.pwd.toUpperCase() === q);
+  if(!student){
+    document.getElementById('result').innerHTML = '<p class="msg">No record found for "'+q+'". Please check and try again.</p>';
+    return;
+  }
+  render(student);
+}
+
+document.getElementById('searchBox').addEventListener('keyup', function(e){
+  if(e.key === 'Enter') doSearch();
+});
+
+document.getElementById('result').innerHTML = '<p class="msg">Enter a Roll No. / Password and click Search to view the result.</p>';
+</script>
+
+</body>
+</html>
